@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.clin.dao.UserDao">
+    <cache eviction="LRU" type="com.clin.util.RedisCache" />
+
+    <select id="login" resultType="com.clin.entity.User">
+        select * from user where Uid=#{Uid}
+        and Upasswd=#{Upasswd}
+    </select>
+    <select id="query_friend" resultType="com.clin.entity.User">
+     select user.Uimage,user.Uname,user.Uid FROM user WHERE Uid in(
+SELECT attenmember.Uider from attenmember WHERE NGid=
+(SELECT NGid FROM useratten WHERE
+Uid=#{Uid})
+)
+
+    </select>
+    <select id="query_mes" resultType="com.clin.entity.Primessage">
+        select * from primessage where Uid=#{Uid} and RUid=#{friendID}
+        or Uid=#{friendID} and RUid=#{Uid}
+    </select>
+</mapper>

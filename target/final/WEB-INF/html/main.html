@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+<div id="app">
+<a @click="tiao">跳转</a>
+
+</div>
+<div id="right">
+<button @click="change">button</button>
+</div>
+</body>
+<script>
+    var all={
+        user:[]
+    }
+    new Vue({
+        el:"#app",
+        data:all,
+        methods: {
+            query_myselft: function () {
+                this.$http.post('/user/query_myself',{emulateJSON:true}).then(function(res){
+                    all.user=res.data
+                },function (res) {
+                    console.log(res);
+                })
+            },
+            tiao:function(){
+                window.location.href='/user/im/'+all.user.uid
+            }
+
+        }
+        ,mounted:function () {
+            this.query_myselft();
+        }
+    })
+
+
+
+    new Vue({
+        el: "#right",
+        created() {
+            this.initWebpack()
+        },
+
+        methods: {
+            initWebpack() {//初始化websocket
+                var wsuri = "ws://127.0.0.1:8080/ws/1608030151";
+                this.websock = new WebSocket(wsuri);//这里面的this都指向vue
+                this.websock.onopen = this.websocketopen;
+                this.websock.onmessage = this.websocketonmessage;
+                this.websock.onclose = this.websocketclose;
+                this.websock.onerror = this.websocketerror;
+            },
+            websocketopen() {//打开
+                console.log("WebSocket连接成功")
+            },
+            websocketonmessage(e) { //数据接收
+                console.log(e)
+                var aToStr = JSON.parse(e.data)
+                console.log(aToStr)
+                /*body.innerHTML+="<br/>"+aToStr[0].from+":"+aToStr[0].content;*/
+                Alldata.msg.push({'pmcontent': aToStr[0].content, 'ruid': aToStr[0].to, 'uid': aToStr[0].from});
+                this.update()
+            },
+            websocketclose() {  //关闭
+                console.log("WebSocket关闭");
+            },
+            websocketerror() {  //失败
+                console.log("WebSocket连接失败");
+            },
+            change() {
+
+                    this.$http.post('/user/click',{emulateJSON:true}).then(function(res){
+                       console.log(res)
+                    },function (res) {
+                        console.log(res)
+                    })
+                }
+            ,
+            update() {
+                this.$nextTick(function () {
+                    var div = document.getElementById('main_talk');
+                    div.scrollTop = div.scrollHeight;
+                })
+            }
+        }
+    })
+</script>
+</html>

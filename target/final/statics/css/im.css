@@ -1,0 +1,151 @@
+		*{
+				margin: 0;
+				padding: 0;
+			}
+			#bigdiv{
+				position:absolute;
+				background-color: gainsboro;
+				height: 100%;
+				width: 100%;
+			}
+			.demo{
+		padding-left: 10%;
+					
+			}
+			#left_nav{
+				float: left;
+				position: relative;
+				width: 250px;
+				background-color: #292b2e;
+			}
+			#header{
+				height:71px ;
+			}
+			.user_w_f1{
+				float: left;
+			}
+			.face{
+				margin: 11px 15px 0 18px;
+			}
+			.user_name{
+				color: #fff;
+			}
+			.search{
+				height: 34px;
+				padding: 12px 16px 0;
+				border-bottom: 1px #404247 solid;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(64, 66, 71);
+			}
+			.search__input{
+				top: -2px;
+    width: 180px;
+    height: 10px;
+    line-height: 16px;
+    border: 0;
+    color: #fff;
+    padding-top: 15px;
+			}
+			#list{
+				overflow: hidden;
+				height: 500px;
+			}
+		.li_img{
+			display: inline;
+		float: left;
+		padding-left: 20px;
+		padding-top: 10px;
+		}
+		.clearfix{
+			display: block;
+		}
+		.li_name{
+
+   		 display: inline;
+   		 
+		}
+		.li_username{
+			padding:0px 0px 0 30px;
+			color: white;
+		}
+		ul{
+			list-style: none;
+		}
+		li{
+			width: 240px;
+			height: 75px;
+			border-bottom: 1px #C3C8CD solid;
+		}
+		.w_f1{
+			float: left;
+			-webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+		}
+		
+		
+		#right{
+			background-color: whitesmoke;
+			width: 1000px;
+			height: 617px;
+		position: relative;
+		float: left;
+		
+		}
+		#right_head{
+			width: 900px;
+			height: 51px;
+		}
+		.topic_user{
+			line-height: 51px;
+			color: black;
+			text-align: center;
+		}
+		.fenge{
+			width: 1000px;
+			height: 30px;
+			background-color: #E9EAF3
+		}
+		#main_talk{
+			width: 1000px;
+			height: 300px;
+			overflow: auto;
+		}
+		.them_userm{
+			font-size: 20px;
+			
+		}
+		.pp{
+			padding-left: 20px;
+			padding-top: 10px;
+		}
+		p{
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow: hidden;
+}	
+	.my_userm{
+
+		font-size: 20px;
+	}
+	.ppp{
+		padding-left: 20px;
+	}
+	.myimg{
+		padding-left: 20px;
+	}
+	.yourimg{
+		padding-left: 20px;
+	}
+	#txt_area{
+		width: 1000px;
+		height: 150px;
+	}.btn{
+		float: right;
+	}
+	#send_btn{
+		width: 100px;
+		height: 50px;
+	}

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<link rel="stylesheet" href="../../../statics/css/im.css" />
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.1/vue-resource.min.js"></script>
+<body>
+<div id="bigdiv">
+    <div class="demo">
+        <div id="left_nav">
+            <div id="header">
+                <div  class="user_w_f1">
+                    <img v-bind:src="Alldata.user.uimage" width="50" height="50" class="face"/>
+                    <span class="user_name">{{Alldata.user.uname}}</span>
+                </div>
+                <div class="set w_fr"></div>
+            </div>
+            <div>
+                <div class="search">
+                    <img src="../../../statics/images/t8TeL1S.png" alt="" class="search__img" />
+                    <input type="text" class="search__input" placeholder="Search" />
+                </div>
+            </div>
+
+            <div id="list">
+                <ul id="fre_list">
+                    <li v-for="value in friend" @click='out(value)'>
+                        <div class="li_img">
+                            <img v-bind:src="value.uimage" width="50" height="50" />
+
+                        </div>
+                    <div class="li_name">
+                        <p class="name w_f1">
+                        <span class="li_username">{{value.uname}}</span>
+                    </p></div>
+                     </li>
+             </ul>
+            </div>
+        </div>
+
+
+        <div id="right" v-if="Alldata.list.uname!=null">
+          	<div id="right_head">
+                    <p class="topic_user">{{Alldata.list.uname}}</p>
+                </div>
+                <div class="fenge"></div>
+                <div id="main_talk">       <!-- //循环聊天记录-->
+                    <div v-for="m in msg" v-bind:class="m.uid==Alldata.user.uid?'them_userm':'my_userm'">
+
+                        <img v-if="m.uid==Alldata.user.uid" v-bind:src="Alldata.user.uimage" v-bind:class="m.uid==Alldata.user.uid?'yourimg':'myimg'"/>
+                        <img v-else v-bind:src="Alldata.list.uimage" v-bind:class="m.uid==Alldata.user.uid?'yourimg':'myimg'"/>
+                        <p class="pp">{{m.pmcontent}}</p>
+                    </div>
+                     <!--   <div class="my_userm">
+                            <img src="img/3.png" class="myimg"/>
+                        <p class="ppp">asdasdasdasdasdasdas</p>
+                    </div>
+                    <div class="my_userm">
+                            <img src="img/3.png" class="myimg"/>
+                        <p class="ppp">asdasdasdasdasdasdas</p>
+                    </div>
+
+-->
+                </div>
+                <div class="fenge"></div>
+                <div class="text_mes">
+                    <textarea id="txt_area"></textarea>
+
+                </div>
+                <div class="btn">
+                    <button id="send_btn" @click="send()">发送消息</button>
+                </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+<script src='../../../statics/js/jquery-1.11.0.min.js'></script>
+<script>
+    var url = window.location.href;
+    function getUrlParam(url,name){
+        var pattern = new RegExp("[/&]" + name +"\([^&]+)","g");
+        var matcher = pattern.exec(url);
+        var items = null;
+        if(matcher != null){
+            try{
+                items = decodeURIComponent(decodeURIComponent(matcher[1]));
+            }catch(e){
+                try{
+                    items = decodeURIComponent(matcher[1]);
+                }catch(e){
+                    items = matcher[1];
+                }
+            }
+        }
+        return items;
+    }
+
+    var uid = getUrlParam(url,'im/');
+    alert(uid)
+    var Alldata={
+        user:[],
+        friend:[],
+        list:[],
+        msg:[]
+  };
+
+        new Vue({
+        el:"#header",
+        data:Alldata
+        ,
+        methods: {
+            query_myselft: function () {
+                this.$http.post('/user/query_myself',{emulateJSON:true}).then(function(res){
+                    Alldata.user=res.data
+                },function (res) {
+                    console.log(res);
+                })
+            }
+
+        }
+        ,mounted:function () {
+            this.query_myselft();
+        }
+    })
+
+     new Vue({
+        el:"#fre_list",
+        data: Alldata,
+        methods:{
+            query_myfriend:function(){                      //获取好友列表
+                this.$http.post('/user/query_myfriend',{emulateJson:true}).then(function(res){
+                 Alldata.friend=res.data
+                },function(res){
+                    console.log(res);
+                })},
+            out:function (e) {                          //获取所有消息
+                    Alldata.list=e
+                Alldata.res=null
+                    this.$http.post(
+                        '/user/query_mes',
+                        {uid:Alldata.user.uid,rUid:Alldata.list.uid},{emulateJson:true}
+                        ).
+                    then(function (res) {
+                        console.log(res.data)
+                        Alldata.msg=res.data
+                    },function (res) {
+                        console.log(res);
+                    })
+                }
+        },mounted:function () {
+            this.query_myfriend();
+       }
+    })
+
+    new Vue({
+        el:"#right",
+        created(){
+            this.initWebpack()
+        },
+        data:Alldata,
+
+        methods:{
+            initWebpack(){//初始化websocket
+                var wsuri = "ws://127.0.0.1:8080/ws/"+uid;
+                this.websock = new WebSocket(wsuri);//这里面的this都指向vue
+                this.websock.onopen = this.websocketopen;
+                this.websock.onmessage = this.websocketonmessage;
+                this.websock.onclose = this.websocketclose;
+                this.websock.onerror = this.websocketerror;
+            },
+            websocketopen(){//打开
+                console.log("WebSocket连接成功")
+            },
+            websocketonmessage(e){ //数据接收
+                console.log(e)
+                var aToStr=JSON.parse(e.data)
+                console.log(aToStr)
+                /*body.innerHTML+="<br/>"+aToStr[0].from+":"+aToStr[0].content;*/
+                Alldata.msg.push({'pmcontent':aToStr[0].content,'ruid':aToStr[0].to,'uid':aToStr[0].from});
+               this.update()
+            },
+            websocketclose(){  //关闭
+                console.log("WebSocket关闭");
+            },
+            websocketerror(){  //失败
+                console.log("WebSocket连接失败");
+            },
+            send(){
+                var to=Alldata.list.uid;
+                var msg=document.getElementById("txt_area").value;//获取输入框内容
+                var from=Alldata.user.uid;
+                this.websock.send(JSON.stringify({
+                    message : {
+                        content : msg,
+                        to : to,      //接收人,如果没有则置空,如果有多个接收人则用,分隔
+                        from:from
+                    },
+                    type : "message"
+                }));//发送消息
+                this.reset();//清空输入框
+                Alldata.msg.push({'pmcontent':msg,'ruid':to,'uid':from});
+                this.update();
+            },
+            reset(){
+                document.getElementById("txt_area").value="";
+            },
+            update(){
+                this.$nextTick(function(){
+                    var div = document.getElementById('main_talk');
+                    div.scrollTop = div.scrollHeight;
+                })
+            }
+        }
+
+    })
+
+
+</script>
+</body>
+<script>
+
+
+/*    var socket=new WebSocket("ws://127.0.0.1:8080/ws/"+uid)
+    //创建Socket
+    socket.onopen = function(event) {
+
+        //向服务器发送数据
+        //socket.send('哈哈哈哈');
+
+        //接收数据事件
+        socket.onmessage = function(event) {
+            console.log(event.data)
+            var aToStr=JSON.parse(event.data)
+            console.log(aToStr)
+            body.innerHTML+="<br/>"+aToStr[0].from+":"+aToStr[0].content;
+        };
+
+        // socket关闭事件
+        socket.onclose = function(event) {
+            body.innerHTML+="<br/>系统：已和服务器断开连接！！！";
+        };
+
+        //关闭socket
+        //socket.close()
+    };
+
+    //-----------
+    var body=document.getElementById("#main_talk");
+    function send(){
+        var to='1608030149';
+        var msg=document.getElementById("txt_area").value;//获取输入框内容
+        var from='1608030150';
+        socket.send(JSON.stringify({
+            message : {
+                content : msg,
+                to : to,      //接收人,如果没有则置空,如果有多个接收人则用,分隔
+                from:from
+            },
+            type : "message"
+        }));//发送消息
+        reset();//清空输入框
+        body.innerHTML+="<br/>："+msg;
+    }
+
+    function reset(){
+        document.getElementById("txt_area").value="";
+    }*/
+</script>
+</html>
