@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-@Service("MessageService")
+@Service("messageService")
 public class MessageServiceImpl implements MessageService {
     @Resource
     private MessageDao messageDao;
