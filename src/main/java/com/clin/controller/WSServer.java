@@ -70,7 +70,7 @@ public class WSServer {
     /*	for(OnlineUser user:onlineUsers) {
     	user.getSession().getBasicRemote().sendText(message);}
     }*/
-        Message message1=new Message();
+        /*Message message1=new Message();
         message1.setTo(to);
         message1.setFrom(from);
         message1.setContent(message);
@@ -83,7 +83,7 @@ public class WSServer {
 
         } else {                                         //在线就发消息
             onlineUserMap.get(to).getSession().getBasicRemote().sendObject(message1);
-        }
+        }*/
     }
     public void sendAllFans(String channel) throws IOException {
         //将订阅了channel的全部找出来,在线就推送，不在线存入离线
